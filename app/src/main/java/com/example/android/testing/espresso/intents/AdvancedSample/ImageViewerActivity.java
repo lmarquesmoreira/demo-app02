@@ -24,7 +24,12 @@ import android.provider.MediaStore;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.widget.ImageView;
-
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.analytics.Analytics;
+import com.microsoft.appcenter.crashes.Crashes;
+import com.microsoft.appcenter.AppCenter;
+import com.microsoft.appcenter.distribute.Distribute;
+import com.microsoft.appcenter.push.Push;
 /**
  * Captures an image and displays a thumbnail of the result.
  */
@@ -40,12 +45,27 @@ public class ImageViewerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Push.setSenderId("410491265492");
+
+        Distribute.setListener(new MyDistributeListener());
+
+        AppCenter.start(getApplication(), "c7326ee1-498b-4251-8ab2-648d13a2c2ae",
+                Analytics.class, Crashes.class, Push.class, Distribute.class);
+
         setContentView(R.layout.activity_image_viewer);
         mImageView = (ImageView) findViewById(R.id.imageView);
+        Analytics.trackEvent("AppStarted");
+
+        //Analytics.trackEvent("Generating test crash");
+        //Crashes.generateTestCrash();
+
     }
 
     private void dispatchTakePictureIntent() {
         // Open the camera to take a photo.
+        Analytics.trackEvent("Open the camera to take a photo");
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
@@ -66,6 +86,7 @@ public class ImageViewerActivity extends Activity {
             }
             Bitmap imageBitmap = (Bitmap) extras.get(KEY_IMAGE_DATA);
             mImageView.setImageBitmap(imageBitmap);
+            Analytics.trackEvent("display photo on the ImageView");
         }
     }
 }
