@@ -26,6 +26,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -40,7 +41,9 @@ import static android.support.test.espresso.intent.matcher.IntentMatchers.hasAct
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static com.example.android.testing.espresso.intents.AdvancedSample.ImageViewHasDrawableMatcher.hasDrawable;
 import static org.hamcrest.Matchers.not;
-
+import android.support.test.runner.AndroidJUnit4;
+import com.microsoft.appcenter.espresso.Factory;
+import com.microsoft.appcenter.espresso.ReportHelper;
 /**
  * Espresso tests for {@link ImageViewerActivity}.
  */
@@ -62,6 +65,9 @@ public class ImageViewerActivityTest {
     public IntentsTestRule<ImageViewerActivity> mIntentsRule = new IntentsTestRule<>(
             ImageViewerActivity.class);
 
+    @Rule
+    public ReportHelper reportHelper = Factory.getReportHelper();
+
     @Before
     public void stubCameraIntent() {
         ActivityResult result = createImageCaptureActivityResultStub();
@@ -70,16 +76,26 @@ public class ImageViewerActivityTest {
         intending(hasAction(MediaStore.ACTION_IMAGE_CAPTURE)).respondWith(result);
     }
 
+    @After
+    public void TearDown(){
+        reportHelper.label("Stopping App");
+    }
+
     @Test
     public void takePhoto_drawableIsApplied() {
+
         // Check that the ImageView doesn't have a drawable applied.
         onView(withId(R.id.imageView)).check(matches(not(hasDrawable())));
+        reportHelper.label("Check that the ImageView doesn't have a drawable applied.");
 
         // Click on the button that will trigger the stubbed intent.
         onView(withId(R.id.button_take_photo)).perform(click());
+        reportHelper.label("Click on the button that will trigger the stubbed intent.");
 
         // With no user interaction, the ImageView will have a drawable.
         onView(withId(R.id.imageView)).check(matches(hasDrawable()));
+        reportHelper.label("With no user interaction, the ImageView will have a drawable.");
+
     }
 
     private ActivityResult createImageCaptureActivityResultStub() {

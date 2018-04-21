@@ -36,6 +36,8 @@ dependencies {
     androidTestCompile 'com.android.support.test:rules:' + rootProject.rulesVersion;
     androidTestCompile 'com.android.support.test.espresso:espresso-core:' + rootProject.espressoVersion;
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:' + rootProject.espressoVersion;
+    androidTestCompile('com.microsoft.appcenter:espresso-test-extension:1.2')
+
 }
 
 apply plugin: 'com.google.gms.google-services'
